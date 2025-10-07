@@ -90,16 +90,16 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2">
                 <Mail className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <span className="text-sm text-muted-foreground">contato@voiceaipro.com</span>
+                <span className="text-sm text-muted-foreground">ramonssa100@gmail.com</span>
               </li>
               <li className="flex items-start space-x-2">
                 <Phone className="h-4 w-4 text-muted-foreground mt-0.5" />
-                <span className="text-sm text-muted-foreground">+55 (11) 9999-9999</span>
+                <span className="text-sm text-muted-foreground">+55 (11) 985320042</span>
               </li>
               <li className="flex items-start space-x-2">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
                 <span className="text-sm text-muted-foreground">
-                  São Paulo, SP<br />Brasil
+                  Salvador, Ba<br />Brasil
                 </span>
               </li>
             </ul>
