@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  password      String
+  company       String?
+  blandApiKey   String?   @map("bland_api_key")
+  webhookUrl    String?   @map("webhook_url")
+  webhookEnabled Boolean  @default(false) @map("webhook_enabled")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  calls         Call[]
+  pathways      Pathway[]
+  knowledgeBases KnowledgeBase[]
+
+  @@map("users")
+}
+
+model Call {
+  id              String    @id @default(cuid())
+  blandCallId     String?   @unique @map("bland_call_id")
+  userId          String    @map("user_id")
+  phoneNumber     String    @map("phone_number")
+  status          String    @default("pending") // pending, in_progress, completed, failed
+  duration        Int?      // em segundos
+  cost            Float?
+  pathwayId       String?   @map("pathway_id")
+  pathwayName     String?   @map("pathway_name")
+  transcript      String?   @db.Text
+  recording       String?
+  answeredBy      String?   @map("answered_by") // human, voicemail, no_answer
+  metadata        Json?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("calls")
+}
+
+model Pathway {
+  id              String    @id @default(cuid())
+  blandPathwayId  String?   @unique @map("bland_pathway_id")
+  userId          String    @map("user_id")
+  name            String
+  description     String?   @db.Text
+  nodes           Json?     // Estrutura dos nós do pathway
+  status          String    @default("draft") // draft, active, archived
+  callsCount      Int       @default(0) @map("calls_count")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("pathways")
+}
+
+model KnowledgeBase {
+  id              String    @id @default(cuid())
+  blandKbId       String?   @unique @map("bland_kb_id")
+  userId          String    @map("user_id")
+  name            String
+  description     String?   @db.Text
+  type            String    @default("text") // text, document, link
+  content         Json?     // Conteúdo estruturado
+  itemsCount      Int       @default(0) @map("items_count")
+  size            Int?      // Tamanho em bytes
+  status          String    @default("draft") // draft, active, archived
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("knowledge_bases")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  token        String   @unique
+  expiresAt    DateTime @map("expires_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
